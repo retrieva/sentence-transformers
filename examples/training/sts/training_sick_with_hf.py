@@ -8,6 +8,9 @@ from sentence_transformers import losses, SentenceTransformer, evaluation
 from sentence_transformers.huggingface import SentenceTransformersCollator, SentenceTransformersTrainer
 
 
+LABEL_COLUMN = "label"
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--output_dir", required=True)
 parser.add_argument("--logging_dir", default="./logs")
@@ -15,12 +18,16 @@ args = parser.parse_args()
 
 base_model = "nli-distilroberta-base-v2"
 data = "sick"
+target_column_name = "relatedness_score"
 
 sick_ds = load_dataset(data)
+sick_ds = sick_ds.remove_columns(LABEL_COLUMN)
+sick_ds = sick_ds.rename_column(target_column_name, LABEL_COLUMN)
+
 
 training_args = TrainingArguments(
     output_dir=args.output_dir,
-    num_train_epochs=1,
+    num_train_epochs=10,
     seed=33,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
@@ -42,7 +49,7 @@ loss = losses.CosineSimilarityLoss(model)
 evaluator = evaluation.EmbeddingSimilarityEvaluator(
     sick_ds["validation"]["sentence_A"],
     sick_ds["validation"]["sentence_B"],
-    sick_ds["validation"]["label"],
+    sick_ds["validation"][LABEL_COLUMN],
     main_similarity=evaluation.SimilarityFunction.COSINE,
 )
 def compute_metrics(predictions: EvalPrediction) -> Dict[str, float]:
@@ -68,4 +75,9 @@ trainer = SentenceTransformersTrainer(
     text_columns=["sentence_A", "sentence_B"],
 )
 
-trainer.train()
+train_result = trainer.train()
+metrics = train_result.metrics
+trainer.save_model()
+trainer.log_metrics("train", metrics)
+trainer.save_metrics("train", metrics)
+trainer.save_state()
