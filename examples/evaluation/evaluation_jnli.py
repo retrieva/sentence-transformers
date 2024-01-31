@@ -6,7 +6,7 @@ python evaluation_jnli.py
 OR
 python evaluation_jnli.py model_name jsnli
 """
-from sentence_transformers import SentenceTransformer, util, LoggingHandler, InputExample
+from sentence_transformers import SentenceTransformer, LoggingHandler, InputExample
 from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 import logging
 import sys

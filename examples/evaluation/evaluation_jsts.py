@@ -6,7 +6,7 @@ python evaluation_jsts.py
 OR
 python evaluation_jsts.py model_name
 """
-from sentence_transformers import SentenceTransformer, util, LoggingHandler, InputExample
+from sentence_transformers import SentenceTransformer, LoggingHandler, InputExample
 from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 import logging
 import sys
