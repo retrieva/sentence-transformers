@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - master
+      - hf-trainer
       - v*-pre
   workflow_dispatch:
 

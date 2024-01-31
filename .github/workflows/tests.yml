@@ -9,6 +9,7 @@ on:
   pull_request:
     branches:
       - master
+      - hf-trainer
   workflow_dispatch:
 
 jobs:
