@@ -1,3 +1,4 @@
+import warnings
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import torch
@@ -233,7 +234,12 @@ class MNRLSentenceTransformer(SentenceTransformer):
         for example in batch:
             temp_texts = []
             for key in SENTENCE_KEYS:
-                temp_texts.append(example[key])
+                try:
+                    temp_texts.append(example[key])
+                except KeyError:
+                    # If the dataset doesn't have the hard negative sentence
+                    warnings.warn(f"Dataset doesn't have {key} sentence")
+                    pass
             texts.append(temp_texts)
 
         sentence_features = [self.tokenize(sentence) for sentence in zip(*texts)]
@@ -266,6 +272,11 @@ def no_dup_batch_collator(batch: List[Dict[str, str]]) -> List[Dict[str, str]]:
         if not is_seen(example):
             no_dup_batch.append(example)
             for key in SENTENCE_KEYS:
-                seen_sentences.add(example[key])
+                try:
+                    seen_sentences.add(example[key])
+                except KeyError:
+                    # If the dataset doesn't have the hard negative sentence
+                    warnings.warn(f"Dataset doesn't have {key} sentence")
+                    pass
 
     return no_dup_batch
