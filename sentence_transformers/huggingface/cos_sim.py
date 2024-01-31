@@ -40,9 +40,7 @@ class SentenceTransformersCollator:
     pad_to_multiple_of: Optional[int] = None
     return_tensors: str = "pt"
 
-    def __init__(
-        self, tokenizer: PreTrainedTokenizerBase, text_columns: List[str], label_name: str
-    ) -> None:
+    def __init__(self, tokenizer: PreTrainedTokenizerBase, text_columns: List[str], label_name: str) -> None:
         self.tokenizer = tokenizer
         self.text_columns = text_columns
         self.label_name = label_name
@@ -143,15 +141,11 @@ class SentenceTransformersTrainer(Trainer):
         features = self.collect_features(inputs)
         loss = self.loss(features, inputs["label"])
         if return_outputs:
-            output = torch.cat(
-                [model(row)["sentence_embedding"][:, None] for row in features], dim=1
-            )
+            output = torch.cat([model(row)["sentence_embedding"][:, None] for row in features], dim=1)
             return loss, output
         return loss
 
-    def collect_features(
-        self, inputs: Dict[str, Union[torch.Tensor, Any]]
-    ) -> List[Dict[str, torch.Tensor]]:
+    def collect_features(self, inputs: Dict[str, Union[torch.Tensor, Any]]) -> List[Dict[str, torch.Tensor]]:
         """Turn the inputs from the dataloader into the separate model inputs."""
         return [
             {

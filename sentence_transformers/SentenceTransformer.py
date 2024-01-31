@@ -485,7 +485,7 @@ class SentenceTransformer(nn.Sequential):
         model_name: Optional[str] = None,
         create_model_card: bool = True,
         train_datasets: Optional[List[str]] = None,
-        state_dict = None,
+        state_dict=None,
     ):
         """
         Saves all elements for this seq. sentence embedder into different sub-folders

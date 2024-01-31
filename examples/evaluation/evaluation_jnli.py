@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score
 
 logger = logging.getLogger(__name__)
 
+
 class NLIEmbeddingSimilarityEvaluator(EmbeddingSimilarityEvaluator):
     def __init__(
         self,
@@ -51,10 +52,7 @@ class NLIEmbeddingSimilarityEvaluator(EmbeddingSimilarityEvaluator):
         elif score >= self.entailment_threshold:
             return "entailment"
 
-    def __call__(
-        self, model, output_path: str = None, epoch: int = -1, steps: int = -1
-    ) -> float:
-
+    def __call__(self, model, output_path: str = None, epoch: int = -1, steps: int = -1) -> float:
         embeddings1 = model.encode(
             self.sentences1,
             batch_size=self.batch_size,
@@ -73,9 +71,7 @@ class NLIEmbeddingSimilarityEvaluator(EmbeddingSimilarityEvaluator):
         nli_predicts = [self.convert_to_label(score) for score in cosine_scores]
         acc = accuracy_score(labels, nli_predicts)
 
-        logger.info(
-            "Cosine-Similarity :\tAccuracy: {:.4f}".format(acc)
-        )
+        logger.info("Cosine-Similarity :\tAccuracy: {:.4f}".format(acc))
 
         if output_path is not None and self.write_csv:
             csv_path = os.path.join(output_path, self.csv_file)
@@ -130,6 +126,7 @@ if data_type == "jsnli":
         example["premise"] = "".join(example["premise"])
         example["hypothesis"] = "".join(example["hypothesis"])
         return example
+
     dataset = dataset.map(detokenize)
 
     for _, example in enumerate(dataset["validation"]):

@@ -6,4 +6,5 @@ def collate_fn(functions: List[Callable]) -> Callable:
         for function in functions:
             batch = function(batch)
         return batch
+
     return collate_fn_

@@ -34,11 +34,13 @@ def main():
     args = parser.parse_args()
 
     sick_ds = load_dataset("shunk031/jsnli", "with-filtering")
+
     # detokenize
     def detokenize(example):
         example["premise"] = "".join(example["premise"])
         example["hypothesis"] = "".join(example["hypothesis"])
         return example
+
     sick_ds = sick_ds.map(detokenize)
 
     train_data = {}
@@ -147,7 +149,6 @@ def main():
         loss=loss,
         text_columns=SENTENCE_PAIR_COLUMN_NAMES,  # no use
     )
-
 
     train_result = trainer.train()
     metrics = train_result.metrics

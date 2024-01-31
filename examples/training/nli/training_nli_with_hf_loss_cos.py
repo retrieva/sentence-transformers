@@ -41,7 +41,6 @@ def main():
     data = "sick"
     sick_ds = load_dataset(data)
 
-
     train_data = {}
     training_dataset = sick_ds["train"]
     for _, example in enumerate(training_dataset):
@@ -78,7 +77,6 @@ def main():
 
     train_dataset = Dataset.from_list(train_samples)
 
-
     training_args = TrainingArguments(
         output_dir=args.output_dir,
         num_train_epochs=100,
@@ -107,6 +105,7 @@ def main():
     eval_loss = losses.CosineSimilarityLoss(model)
 
     main_similarity: Optional[str] = None
+
     def compute_metrics(predictions: EvalPrediction) -> Dict[str, float]:
         """Compute metrics for evaluation.
 
@@ -123,9 +122,11 @@ def main():
         labels = predictions.label_ids
 
         cosine_scores = 1 - paired_cosine_distances(embeddings_a, embeddings_b)
-        manhattan_distances = - paired_manhattan_distances(embeddings_a, embeddings_b)
-        euclidean_distances = - paired_euclidean_distances(embeddings_a, embeddings_b)
-        dot_products = [np.dot(embedding_a, embedding_b) for embedding_a, embedding_b in zip(embeddings_a, embeddings_b)]
+        manhattan_distances = -paired_manhattan_distances(embeddings_a, embeddings_b)
+        euclidean_distances = -paired_euclidean_distances(embeddings_a, embeddings_b)
+        dot_products = [
+            np.dot(embedding_a, embedding_b) for embedding_a, embedding_b in zip(embeddings_a, embeddings_b)
+        ]
 
         eval_pearson_cosine, _ = pearsonr(labels, cosine_scores)
         eval_spearman_cosine, _ = spearmanr(labels, cosine_scores)
@@ -165,10 +166,15 @@ def main():
         elif main_similarity == "dot":
             return {"eval_spearman_dot": eval_spearman_dot}
         elif main_similarity is None:
-            return {"eval_max_similarity": max(eval_spearman_cosine, eval_spearman_euclidean, eval_spearman_manhattan, eval_spearman_dot)}
+            return {
+                "eval_max_similarity": max(
+                    eval_spearman_cosine, eval_spearman_euclidean, eval_spearman_manhattan, eval_spearman_dot
+                )
+            }
         else:
-            raise ValueError(f"main_similarity must be one of [cosine, euclidean, manhattan, dot], but got {main_similarity}")
-
+            raise ValueError(
+                f"main_similarity must be one of [cosine, euclidean, manhattan, dot], but got {main_similarity}"
+            )
 
     collator_fn = collate_fn([no_dup_batch_collator, model.smart_batching_collate])
     eval_data_collator = CosSimSentenceTransformersCollator(
@@ -190,7 +196,6 @@ def main():
         eval_data_collator=eval_data_collator,
         eval_loss=eval_loss,
     )
-
 
     train_result = trainer.train()
     metrics = train_result.metrics

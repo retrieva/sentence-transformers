@@ -13,6 +13,7 @@ from ..SentenceTransformer import SentenceTransformer
 
 SENTENCE_KEYS = ["sentence_a", "sentence_b", "sentence_c"]
 
+
 class MNRLSentenceTransformersTrainer(CosSimSentenceTransformersTrainer):
     def __init__(
         self,
@@ -94,9 +95,7 @@ class MNRLSentenceTransformersTrainer(CosSimSentenceTransformersTrainer):
         features = self.collect_features(inputs)
         loss = self.eval_loss(features, inputs[self.label_names[0]])
         if return_outputs:
-            output = torch.cat(
-                [model(row)["sentence_embedding"][:, None] for row in features], dim=1
-            )
+            output = torch.cat([model(row)["sentence_embedding"][:, None] for row in features], dim=1)
             return loss, output
         return loss
 
@@ -167,6 +166,7 @@ class MNRLSentenceTransformersTrainer(CosSimSentenceTransformersTrainer):
         with torch.no_grad():
             if is_sagemaker_mp_enabled():
                 from transformers.trainer_pt_utils import smp_forward_only, smp_nested_concat
+
                 raw_outputs = smp_forward_only(model, feature)
                 if has_labels or loss_without_labels:
                     if isinstance(raw_outputs, dict):
@@ -260,6 +260,7 @@ def no_dup_batch_collator(batch: List[Dict[str, str]]) -> List[Dict[str, str]]:
             [{"sentence_a": "a", "sentence_b": "b", "sentence_c": "c", "label": "entailment"}, ...]
     """
     seen_sentences = set()
+
     def is_seen(example: Dict[str, str]) -> bool:
         for key in SENTENCE_KEYS:
             if example[key] in seen_sentences:

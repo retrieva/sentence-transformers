@@ -52,10 +52,11 @@ evaluator = evaluation.EmbeddingSimilarityEvaluator(
     sick_ds["validation"][LABEL_COLUMN],
     main_similarity=evaluation.SimilarityFunction.COSINE,
 )
+
+
 def compute_metrics(predictions: EvalPrediction) -> Dict[str, float]:
-    return {
-        "cosine_similarity": evaluator(model)
-    }
+    return {"cosine_similarity": evaluator(model)}
+
 
 data_collator = CosSimSentenceTransformersCollator(
     tokenizer=tokenizer,
