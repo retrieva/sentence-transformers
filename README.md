@@ -28,6 +28,7 @@ This repository is a fork of [UKPLab/sentence-transformers](https://github.com/U
 See [training_jnli_with_hf.py](./examples/training/nli/training_jnli_with_hf.py) for an example of training MNRL with huggingface Trainer.
 
 The following code snippet shows how to use huggingface Trainer to train MNRL with sentence-transformers.
+The NLI data is used as an example (If you want to train SimCSE, need to fix some codes.).
 
 If you want to know more about this usage, please see [training_jnli_with_hf.py](./examples/training/nli/training_jnli_with_hf.py).
 
@@ -50,6 +51,8 @@ pooling = models.Pooling(hf_model.get_word_embedding_dimension())
 model = MNRLSentenceTransformer(modules=[hf_model, pooling])
 tokenizer = model.tokenizer
 loss = losses.MultipleNegativeRankingLoss(model)
+# If no_dup_batch_collator don't need, just use model.smart_batching_collate
+# collator_fn = collate_fn([model.smart_batching_collate])
 collator_fn = collate_fn([no_dup_batch_collator, model.smart_batching_collate])
 
 trainer = MNRLSentenceTransformersTrainer(
