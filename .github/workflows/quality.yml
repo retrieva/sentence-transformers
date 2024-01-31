@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - hf-trainer
       - v*-release
       - v*-pre
   pull_request:
