@@ -1,7 +1,6 @@
 import argparse
 import random
 
-import numpy as np
 import wandb
 from datasets import load_dataset, Dataset
 from transformers import TrainingArguments
@@ -16,7 +15,10 @@ from sentence_transformers.huggingface import (
     no_dup_batch_collator,
 )
 
-wandb.init(project="sentence-transformers", entity="katsumata420")
+WANDB_PROJECT = "sentence-transformers"
+WANDB_ENTITY = "hoge"
+
+wandb.init(project=WANDB_PROJECT, entity=WANDB_ENTITY)
 logger = logging.get_logger(__name__)
 
 SENTENCE_PAIR_COLUMN_NAMES = ["sentence_A", "sentence_B"]
