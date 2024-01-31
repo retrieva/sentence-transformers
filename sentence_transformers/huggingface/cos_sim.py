@@ -1,14 +1,28 @@
 """ A Trainer that is compatible with Huggingface transformers """
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 from torch import nn
 from transformers import PreTrainedTokenizerBase, Trainer
+from transformers.modeling_utils import PreTrainedModel, unwrap_model
 from transformers.tokenization_utils import BatchEncoding
+from transformers.trainer import TRAINING_ARGS_NAME
+from transformers.utils import SAFE_WEIGHTS_NAME, WEIGHTS_NAME, logging, is_safetensors_available, is_peft_available
 from transformers.utils.generic import PaddingStrategy
 
-from sentence_transformers import SentenceTransformer
+from ..SentenceTransformer import SentenceTransformer
+
+
+logger = logging.get_logger(__name__)
+
+
+if is_safetensors_available():
+    import safetensors.torch
+
+if is_peft_available():
+    from peft import PeftModel
 
 
 @dataclass
@@ -27,13 +41,14 @@ class SentenceTransformersCollator:
     return_tensors: str = "pt"
 
     def __init__(
-        self, tokenizer: PreTrainedTokenizerBase, text_columns: List[str]
+        self, tokenizer: PreTrainedTokenizerBase, text_columns: List[str], label_name: str
     ) -> None:
         self.tokenizer = tokenizer
         self.text_columns = text_columns
+        self.label_name = label_name
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, torch.Tensor]:
-        batch = {"label": torch.tensor([row["label"] for row in features])}
+        batch = {self.label_name: torch.tensor([row[self.label_name] for row in features])}
         for column in self.text_columns:
             padded = self._encode([row[column] for row in features])
             batch[f"{column}_input_ids"] = padded.input_ids
@@ -145,3 +160,38 @@ class SentenceTransformersTrainer(Trainer):
             }
             for column in self.text_columns
         ]
+
+    def _save(self, output_dir: Optional[str] = None, state_dict=None) -> None:
+        """Save model."""
+        # If we are executing this function, we are the process zero, so we don't check for that.
+        output_dir = output_dir if output_dir is not None else self.args.output_dir
+        os.makedirs(output_dir, exist_ok=True)
+        logger.info(f"Saving model checkpoint to {output_dir}")
+
+        supported_classes = (PreTrainedModel,) if not is_peft_available() else (PreTrainedModel, PeftModel)
+        # Save a trained model and configuration using `save_pretrained()`.
+        # They can then be reloaded using `from_pretrained()`
+        if not isinstance(self.model, SentenceTransformer):
+            if state_dict is None:
+                state_dict = self.model.state_dict()
+
+            if isinstance(unwrap_model(self.model), supported_classes):
+                unwrap_model(self.model).save_pretrained(
+                    output_dir, state_dict=state_dict, safe_serialization=self.args.save_safetensors
+                )
+            else:
+                logger.info("Trainer.model is not a `PreTrainedModel`, only saving its state dict.")
+                if self.args.save_safetensors:
+                    safetensors.torch.save_file(
+                        state_dict, os.path.join(output_dir, SAFE_WEIGHTS_NAME), metadata={"format": "pt"}
+                    )
+                else:
+                    torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
+        else:
+            self.model.save(output_dir)
+
+        if self.tokenizer is not None:
+            self.tokenizer.save_pretrained(output_dir)
+
+        # Good practice: save your training arguments together with the trained model
+        torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))

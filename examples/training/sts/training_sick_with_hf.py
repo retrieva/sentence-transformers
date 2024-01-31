@@ -5,7 +5,7 @@ from transformers import TrainingArguments, EvalPrediction
 from datasets import load_dataset
 
 from sentence_transformers import losses, SentenceTransformer, evaluation
-from sentence_transformers.huggingface import SentenceTransformersCollator, SentenceTransformersTrainer
+from sentence_transformers.huggingface import CosSimSentenceTransformersCollator, CosSimSentenceTransformersTrainer
 
 
 LABEL_COLUMN = "label"
@@ -57,12 +57,13 @@ def compute_metrics(predictions: EvalPrediction) -> Dict[str, float]:
         "cosine_similarity": evaluator(model)
     }
 
-data_collator = SentenceTransformersCollator(
+data_collator = CosSimSentenceTransformersCollator(
     tokenizer=tokenizer,
     text_columns=["sentence_A", "sentence_B"],
+    label_name=LABEL_COLUMN,
 )
 
-trainer = SentenceTransformersTrainer(
+trainer = CosSimSentenceTransformersTrainer(
     model=model,
     args=training_args,
     train_dataset=sick_ds["train"],
