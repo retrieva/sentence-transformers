@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - master
+      - hf-trainer
       - v*-release
   pull_request:
     branches:
       - master
+      - hf-trainer
   workflow_dispatch:
 
 jobs:
