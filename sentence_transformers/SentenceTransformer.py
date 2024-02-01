@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 from collections import OrderedDict
+from functools import partial
 import warnings
 from typing import List, Dict, Tuple, Iterable, Type, Union, Callable, Optional, Literal, TYPE_CHECKING
 import numpy as np
@@ -484,6 +485,7 @@ class SentenceTransformer(nn.Sequential):
         model_name: Optional[str] = None,
         create_model_card: bool = True,
         train_datasets: Optional[List[str]] = None,
+        state_dict=None,
     ):
         """
         Saves all elements for this seq. sentence embedder into different sub-folders
@@ -517,6 +519,7 @@ class SentenceTransformer(nn.Sequential):
             module = self._modules[name]
             if idx == 0 and isinstance(module, Transformer):  # Save transformer model in the main folder
                 model_path = path + "/"
+                module.save = partial(module.save, state_dict=state_dict)
             else:
                 model_path = os.path.join(path, str(idx) + "_" + type(module).__name__)
 
