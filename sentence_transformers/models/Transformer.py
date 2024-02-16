@@ -1,5 +1,6 @@
 from torch import nn
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
+from peft from PeftConfig, get_peft_model
 import json
 from typing import List, Dict, Optional, Union, Tuple
 import os
@@ -27,6 +28,7 @@ class Transformer(nn.Module):
         tokenizer_args: Dict = {},
         do_lower_case: bool = False,
         tokenizer_name_or_path: str = None,
+        peft_config: Optional[PeftConfig] = None,
     ):
         super(Transformer, self).__init__()
         self.config_keys = ["max_seq_length", "do_lower_case"]
@@ -34,6 +36,9 @@ class Transformer(nn.Module):
 
         config = AutoConfig.from_pretrained(model_name_or_path, **model_args, cache_dir=cache_dir)
         self._load_model(model_name_or_path, config, cache_dir, **model_args)
+
+        if peft_config is not None:
+            self.auto_model = get_peft_model(self.auto_model, peft_config)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             tokenizer_name_or_path if tokenizer_name_or_path is not None else model_name_or_path,
