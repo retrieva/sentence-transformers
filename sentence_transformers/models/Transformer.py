@@ -1,6 +1,6 @@
 from torch import nn
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from peft from PeftConfig, get_peft_model
+from peft import PeftConfig, get_peft_model
 import json
 from typing import List, Dict, Optional, Union, Tuple
 import os
