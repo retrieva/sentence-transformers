@@ -32,10 +32,10 @@ class MNRLDataset(Dataset):
     def create_one_example(self, text_encoding: list[int]) -> BatchEncoding:
         item = self.tok.prepare_for_model(
             text_encoding + [self.tok.eos_token_id],
-            truncation='only_first',
+            truncation="only_first",
             max_length=self.max_length,
             padding=True,
-            return_tensors='pt',
+            return_tensors="pt",
         )
         return item
 
@@ -46,15 +46,15 @@ class MNRLDataset(Dataset):
     def __getitem__(self, item) -> dict[str, BatchEncoding]:
         # https://github.com/UKPLab/sentence-transformers/blob/master/examples/training/ms_marco/train_bi-encoder_mnrl.py#L215
         group = self.train_data[item]
-        query_encoding = self.create_one_example(group['query'])
+        query_encoding = self.create_one_example(group["query"])
 
-        target_pos_ids = group['positives'].pop(0)
+        target_pos_ids = group["positives"].pop(0)
         target_pos_encoding = self.create_one_example(target_pos_ids)
-        group['positives'].append(target_pos_ids)
+        group["positives"].append(target_pos_ids)
 
-        negative_pos_ids = group['negatives'].pop(0)
+        negative_pos_ids = group["negatives"].pop(0)
         negative_pos_encoding = self.create_one_example(negative_pos_ids)
-        group['negatives'].append(negative_pos_ids)
+        group["negatives"].append(negative_pos_ids)
 
         label = 0  # 学習には使用しないが、引数に指定されている
 
@@ -123,19 +123,19 @@ def ir_collator(batch: list[dict[str, BatchEncoding]]) -> dict[str, torch.Tensor
 
 def load_queries(queries_path: str) -> dict[str, str]:
     queries = {}
-    with open(queries_path, 'r') as f:
+    with open(queries_path, "r") as f:
         for line in f:
             data = json.loads(line)
-            queries[data['_id']] = data['text']
+            queries[data["_id"]] = data["text"]
     return queries
 
 
 def load_corpus(corpus_path: str) -> dict[str, str]:
     corpus = {}
-    with open(corpus_path, 'r') as f:
+    with open(corpus_path, "r") as f:
         for line in f:
             data = json.loads(line)
-            corpus[data['_id']] = data['text']
+            corpus[data["_id"]] = data["text"]
     return corpus
 
 
@@ -146,11 +146,11 @@ def load_qrels(qrels_path: str) -> dict[str, list[int]]:
         query_id\tdocument_id\tlabel
     """
     qrels = defaultdict(list)
-    with open(qrels_path, 'r') as f:
+    with open(qrels_path, "r") as f:
         for idx, line in enumerate(f):
             if idx == 0:
                 continue
-            data = line.strip().split('\t')
+            data = line.strip().split("\t")
             qid = data[0]
             did = data[1]
             qrels[qid].append(did)
@@ -164,11 +164,11 @@ def load_hard_negatives(hard_negatives_path: str) -> dict[str, list[int]]:
         {"query_id": str, "hard_negative": [str, str, ...]}
     """
     hard_negative = defaultdict(list)
-    with open(hard_negatives_path, 'r') as f:
+    with open(hard_negatives_path, "r") as f:
         for line in f:
             data = json.loads(line)
-            qid = data['query_id']
-            hard_negative[qid].extend(data['hard_negative'])
+            qid = data["query_id"]
+            hard_negative[qid].extend(data["hard_negative"])
     return hard_negative
 
 
@@ -182,7 +182,7 @@ def load_ir_dataset(
 ) -> datasets.Dataset:
     # load dataset
     # {"query": str, "positives": list[str], "negatives": list[str]}
-    target_datasets: list[datasets.Dataset]  = []
+    target_datasets: list[datasets.Dataset] = []
     for task_idx, task_name in enumerate(task_names):
         target_path = {
             "queries": os.path.join(input_data_dir, task_name, query_file_name),
@@ -240,7 +240,7 @@ def get_dataset(
         batched=True,
         num_proc=num_proc,
         remove_columns=remove_column_names,
-        desc="Running Tokenizer on dataset"
+        desc="Running Tokenizer on dataset",
     )
 
     # split train/dev dataset

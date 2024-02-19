@@ -87,7 +87,7 @@ def main():
         data_collator=ir_collator,
         tokenizer=tokenizer,
         loss=loss,
-        text_columns=[]
+        text_columns=[],
     )
 
     # detecting last checkpoint
