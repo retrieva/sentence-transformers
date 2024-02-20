@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
 from peft import PeftConfig, get_peft_model
@@ -29,6 +30,7 @@ class Transformer(nn.Module):
         do_lower_case: bool = False,
         tokenizer_name_or_path: str = None,
         peft_config: Optional[PeftConfig] = None,
+        is_gradient_checkpointing: bool = False,
     ):
         super(Transformer, self).__init__()
         self.config_keys = ["max_seq_length", "do_lower_case"]
@@ -38,6 +40,13 @@ class Transformer(nn.Module):
         self._load_model(model_name_or_path, config, cache_dir, **model_args)
 
         if peft_config is not None:
+            if is_gradient_checkpointing:
+                for param in self.auto_model.parameters():
+                    param.requires_grad = True
+                    if param.ndim == 1:
+                        param.data = param.data.to(torch.float32)
+                self.auto_model.gradient_checkpointing_enable()
+                self.auto_model.enable_input_require_grads()
             self.auto_model = get_peft_model(self.auto_model, peft_config)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -190,3 +199,10 @@ class Transformer(nn.Module):
         if "model_args" in config:
             config["model_args"].pop("trust_remote_code")
         return Transformer(model_name_or_path=input_path, **config)
+
+    @property
+    def config(self):
+        return self.auto_model.config
+
+    def gradient_checkpointing_enable(self, *args, **kwargs):
+        return self.auto_model.gradient_checkpointing_enable(*args, **kwargs)

@@ -30,12 +30,12 @@ class MNRLDataset(Dataset):
         self.total_len = len(self.train_data)
 
     def create_one_example(self, text_encoding: list[int]) -> BatchEncoding:
+        """Add eos token"""
         item = self.tok.prepare_for_model(
             text_encoding + [self.tok.eos_token_id],
             truncation="only_first",
-            max_length=self.max_length,
-            padding=True,
-            return_tensors="pt",
+            max_length=self.max_length - 2,  # for bos and margin
+            padding=False,
         )
         return item
 
@@ -59,12 +59,13 @@ class MNRLDataset(Dataset):
         label = 0  # 学習には使用しないが、引数に指定されている
 
         anchor_name, pos_name, neg_name = SENTENCE_KEYS
-        return {
+        data = {
             anchor_name: query_encoding,
             pos_name: target_pos_encoding,
             neg_name: negative_pos_encoding,
             "label": label,
         }
+        return data
 
 
 class TokenizeProcessor:
@@ -106,19 +107,58 @@ class TokenizeProcessor:
         return {"query": query_tokenized, "positives": positive_tokenizeds, "negatives": negative_tokenizeds}
 
 
-def ir_collator(batch: list[dict[str, BatchEncoding]]) -> dict[str, torch.Tensor]:
-    # this function is based on sentence_transformers.SentenceTransformer.smart_batching_collate
-    texts = []
-    for example in batch:
-        temp_texts = []
-        for key in SENTENCE_KEYS:
-            temp_texts.append(example[key])
-        texts.append(temp_texts)
+class TokenizeBatchProcessor(TokenizeProcessor):
+    def __call__(self, examples):
+        query_tokenized = self.tokenizer(
+            examples["query"],
+            add_special_tokens=False,
+            truncation=True,
+            max_length=self.max_length - 3,  # For bos, eos and margin
+        )["input_ids"]
+        positive_tokenizeds = []
+        for one_batch in examples["positives"]:
+            positive_tokenizeds.append(
+                self.tokenizer(
+                    one_batch,
+                    add_special_tokens=False,
+                    truncation=True,
+                    max_length=self.max_length - 3,  # For bos and eos
+                )["input_ids"]
+            )
+        negative_tokenizeds = []
+        for one_batch in examples["negatives"]:
+            negative_tokenizeds.append(
+                self.tokenizer(
+                    one_batch,
+                    add_special_tokens=False,
+                    truncation=True,
+                    max_length=self.max_length - 3,  # For bos and eos
+                )["input_ids"]
+            )
+        return {"query": query_tokenized, "positives": positive_tokenizeds, "negatives": negative_tokenizeds}
 
-    transposed_texts = list(zip(*texts))
-    labels = torch.tensor([example["label"] for example in batch])
 
-    return transposed_texts, labels
+class IRCollator:
+    def __init__(self, tokenizer: PreTrainedTokenizer, max_length: int):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+
+    def __call__(self, batch: list[dict[str, BatchEncoding]]) -> tuple[list[BatchEncoding], torch.Tensor]:
+        # this function is based on sentence_transformers.SentenceTransformer.smart_batching_collate
+        texts = []
+        for example in batch:
+            temp_texts = []
+            for key in SENTENCE_KEYS:
+                temp_texts.append(example[key])
+            texts.append(temp_texts)
+
+        transposed_texts = [
+            self.tokenizer.pad(sentences, padding="max_length", max_length=self.max_length, return_tensors="pt")
+            for sentences in zip(*texts)
+        ]
+        labels = torch.tensor([example["label"] for example in batch])
+
+        return transposed_texts, labels
 
 
 def load_queries(queries_path: str) -> dict[str, str]:
@@ -202,10 +242,12 @@ def load_ir_dataset(
             positive_ids = qrels[qid]
             positives = [corpus[pos_id] for pos_id in positive_ids]
             random.shuffle(positives)
+            if qid not in hard_negatives:
+                continue
             negative_ids = hard_negatives[qid]
             negatives = [corpus[neg_id] for neg_id in negative_ids]
             random.shuffle(negatives)
-            current_dataset.append({"query": query, "positives": positives, "negatives": negatives})
+            current_dataset.append({"query": query, "positives": positives, "negatives": negatives, "label": task_idx})
 
         target_datasets.append(datasets.Dataset.from_list(current_dataset))
 
@@ -245,6 +287,7 @@ def get_dataset(
 
     # split train/dev dataset
     logger.info("Split train/dev dataset.")
+    hf_dataset = hf_dataset.class_encode_column("label")
     n_dev_sample = n_each_dev_sample * len(task_names)
     train_dev_dataset = hf_dataset.train_test_split(test_size=n_dev_sample, shuffle=True, stratify_by_column="label")
     train_dataset = train_dev_dataset["train"]

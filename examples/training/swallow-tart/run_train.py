@@ -17,8 +17,8 @@ from transformers import HfArgumentParser, set_seed
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import logging
 
-from .args import STDataArgumnets, STModelArguments, STTrainingArguments
-from .data import get_dataset, TokenizeProcessor, ir_collator
+from args import STDataArgumnets, STModelArguments, STTrainingArguments
+from data import get_dataset, TokenizeProcessor, TokenizeBatchProcessor, IRCollator
 
 logger = logging.get_logger(__name__)
 
@@ -51,20 +51,30 @@ def main():
     if model_args.use_flash_attention:
         # validate fp16 or bf16
         assert training_args.fp16 or training_args.bf16, "use_flash_attention requires fp16 or bf16"
-        model_args = {"attn_implementation": "flash_attention_2"}
-    tf_model = Transformer(model_args.model_name, model_args=model_args, peft_config=model_args.peft_config)
-    pooler = Pooling(tf_model.get_word_embedding_dimension(), pooing_mode="lasttoken")
+        model_kwargs = {"attn_implementation": "flash_attention_2"}
+    tf_model = Transformer(
+        model_args.model_name,
+        model_args=model_kwargs,
+        peft_config=model_args.peft_config,
+        is_gradient_checkpointing=training_args.gradient_checkpointing,
+    )
+    pooler = Pooling(tf_model.get_word_embedding_dimension(), pooling_mode="lasttoken")
     normalize = Normalize()
     model = MNRLSentenceTransformer(modules=[tf_model, pooler, normalize])
     tokenizer = model.tokenizer
+    # https://github.com/texttron/tevatron/blob/2e5d00ee21d5a7db0bd2ea1463c9150a572106d4/examples/repllama/train.py#L68-L69
+    tokenizer.pad_token_id = tokenizer.unk_token_id
+    tokenizer.pad_token = tokenizer.unk_token
     max_length = min(data_args.max_length, tokenizer.model_max_length)
     tokenizer.model_max_length = max_length
     loss = losses.MultipleNegativesRankingLoss(model=model)
+    ir_collator = IRCollator(tokenizer, max_length)
 
     # define train/eval dataset
     logger.info("Load dataset")
     logger.info(f"Target task names: {data_args.task_names}")
-    preprocessor = TokenizeProcessor(tokenizer, data_args.max_length)
+    # preprocessor = TokenizeProcessor(tokenizer, data_args.max_length)
+    preprocessor = TokenizeBatchProcessor(tokenizer, data_args.max_length)
     train_dataset, eval_dataset = get_dataset(
         data_args.task_names,
         data_args.data_dir,
@@ -105,6 +115,7 @@ def main():
                 "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
             )
 
+    checkpoint = None
     if last_checkpoint is not None:
         checkpoint = last_checkpoint
     elif training_args.resume_from_checkpoint is not None:

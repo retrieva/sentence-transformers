@@ -19,6 +19,8 @@ class STModelArguments:
             with open(self.peft_config_path, "r") as f:
                 peft_config_data = json.load(f)
             self.peft_config = get_peft_config(peft_config_data)
+        else:
+            self.peft_config = None
 
 
 @dataclass
@@ -27,8 +29,8 @@ class STDataArgumnets:
     task_names: list[str] = field(default_factory=list)
     max_length: int = 512
     n_dev_sample: int = 100
-    query_file_name: str = "queries.jsonl"
-    corpus_file_name: str = "corpus.jsonl"
-    qrel_file_name: str = "qrels/train.tsv"
-    hard_negatives_file_name: str = "hard_negative/hard_negative.jsonl"
+    query_file_name: str = "tuple_beir/queries.jsonl"
+    corpus_file_name: str = "tuple_beir/corpus.jsonl"
+    qrel_file_name: str = "tuple_beir/qrels/train.tsv"
+    hard_negatives_file_name: str = "negatives/hard_negative.jsonl"
     num_proc: int = 1
