@@ -18,7 +18,7 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import logging
 
 from args import STDataArgumnets, STModelArguments, STTrainingArguments
-from data import get_dataset, TokenizeProcessor, TokenizeBatchProcessor, IRCollator
+from data import get_dataset, TokenizeBatchProcessor, IRCollator
 
 logger = logging.get_logger(__name__)
 
@@ -75,7 +75,6 @@ def main():
     # define train/eval dataset
     logger.info("Load dataset")
     logger.info(f"Target task names: {data_args.task_names}")
-    # preprocessor = TokenizeProcessor(tokenizer, data_args.max_length)
     preprocessor = TokenizeBatchProcessor(tokenizer, data_args.max_length)
     train_dataset, eval_dataset = get_dataset(
         data_args.hf_dataset_dir,
