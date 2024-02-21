@@ -52,6 +52,8 @@ def main():
         # validate fp16 or bf16
         assert training_args.fp16 or training_args.bf16, "use_flash_attention requires fp16 or bf16"
         model_kwargs = {"attn_implementation": "flash_attention_2"}
+    else:
+        model_kwargs = {}
     tf_model = Transformer(
         model_args.model_name,
         model_args=model_kwargs,
@@ -76,6 +78,7 @@ def main():
     # preprocessor = TokenizeProcessor(tokenizer, data_args.max_length)
     preprocessor = TokenizeBatchProcessor(tokenizer, data_args.max_length)
     train_dataset, eval_dataset = get_dataset(
+        data_args.hf_dataset_dir,
         data_args.task_names,
         data_args.data_dir,
         data_args.query_file_name,

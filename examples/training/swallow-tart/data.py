@@ -2,10 +2,12 @@ import os
 import json
 import random
 from collections import defaultdict
+from pathlib import Path
 from typing import Callable, Optional, Tuple
 
 import datasets
 import torch
+from datasets import load_from_disk
 from sentence_transformers.huggingface import SENTENCE_KEYS
 from torch.utils.data import Dataset
 from tqdm import tqdm
@@ -194,7 +196,7 @@ def load_qrels(qrels_path: str) -> dict[str, list[int]]:
             qid = data[0]
             did = data[1]
             qrels[qid].append(did)
-    return qrels
+    return dict(qrels)
 
 
 def load_hard_negatives(hard_negatives_path: str) -> dict[str, list[int]]:
@@ -209,16 +211,16 @@ def load_hard_negatives(hard_negatives_path: str) -> dict[str, list[int]]:
             data = json.loads(line)
             qid = data["query_id"]
             hard_negative[qid].extend(data["hard_negative"])
-    return hard_negative
+    return dict(hard_negative)
 
 
-def load_ir_dataset(
+def prepare_ir_dataset(
     task_names: list[str],
     input_data_dir: str,
     query_file_name: str,
     corpus_file_name: str,
     qrel_file_name: str,
-    hard_negative_file_name: str,
+    hard_negatives_file_name: str,
 ) -> datasets.Dataset:
     # load dataset
     # {"query": str, "positives": list[str], "negatives": list[str]}
@@ -228,7 +230,7 @@ def load_ir_dataset(
             "queries": os.path.join(input_data_dir, task_name, query_file_name),
             "corpus": os.path.join(input_data_dir, task_name, corpus_file_name),
             "qrels": os.path.join(input_data_dir, task_name, qrel_file_name),
-            "hard_negatives": os.path.join(input_data_dir, task_name, hard_negative_file_name),
+            "hard_negatives": os.path.join(input_data_dir, task_name, hard_negatives_file_name),
         }
 
         queries = load_queries(target_path["queries"])
@@ -239,14 +241,39 @@ def load_ir_dataset(
         logger.info(f"...Task: {task_name}")
         current_dataset = []
         for qid, query in tqdm(queries.items()):
+            if qid not in qrels:
+                logger.info(f"......qid: {qid} is not included at the qrel. skip this query.")
+                continue
             positive_ids = qrels[qid]
-            positives = [corpus[pos_id] for pos_id in positive_ids]
+
+            positives = []
+            for pos_id in positive_ids:
+                if pos_id not in corpus:
+                    continue
+                positive_text = corpus[pos_id]
+                if positive_text is not None:
+                    positives.append(corpus[pos_id])
+            if len(positives) == 0:
+                logger.info(f"......qid: {qid} doesn't have positive passage. skip this query.")
+                continue
             random.shuffle(positives)
+
             if qid not in hard_negatives:
                 continue
             negative_ids = hard_negatives[qid]
-            negatives = [corpus[neg_id] for neg_id in negative_ids]
+
+            negatives = []
+            for neg_id in negative_ids:
+                if neg_id not in corpus:
+                    continue
+                negative_text = corpus[neg_id]
+                if negative_text is not None:
+                    negatives.append(corpus[neg_id])
+            if len(negatives) == 0:
+                logger.info(f"......qid: {qid} doesn't have negative passage. skip this query.")
+                continue
             random.shuffle(negatives)
+
             current_dataset.append({"query": query, "positives": positives, "negatives": negatives, "label": task_idx})
 
         target_datasets.append(datasets.Dataset.from_list(current_dataset))
@@ -255,7 +282,35 @@ def load_ir_dataset(
     return target_concat_dataset
 
 
+def load_ir_dataset(
+    dataset_path: Path,
+    task_names: list[str],
+    input_data_dir: str,
+    query_file_name: str,
+    corpus_file_name: str,
+    qrel_file_name: str,
+    hard_negatives_file_name: str,
+    n_each_dev_sample: int,
+) -> datasets.Dataset:
+    if not dataset_path.exists():
+        logger.info("Build huggingface datasets.")
+        hf_dataset = prepare_ir_dataset(
+            task_names, input_data_dir, query_file_name, corpus_file_name, qrel_file_name, hard_negatives_file_name
+        )
+        logger.info("Split train/dev dataset.")
+        hf_dataset = hf_dataset.class_encode_column("label")
+        n_dev_sample = n_each_dev_sample * len(task_names)
+        hf_dataset = hf_dataset.train_test_split(test_size=n_dev_sample, shuffle=True, stratify_by_column="label")
+
+        logger.info(f"Save DatasetDict to {str(dataset_path)}.")
+        hf_dataset.save_to_disk(str(dataset_path), max_shard_size="1GB")
+
+    hf_dataset = load_from_disk(dataset_path)
+    return hf_dataset
+
+
 def get_dataset(
+    hf_dataset_dir: str,
     task_names: list[str],
     input_data_dir: str,
     query_file_name: str,
@@ -269,31 +324,35 @@ def get_dataset(
     num_proc: int = 1,
 ) -> Tuple[Dataset, Dataset]:
     # build HF Dataset
-    logger.info("Build huggingface datasets.")
+    logger.info("Load huggingface datasets.")
     hf_dataset = load_ir_dataset(
-        task_names, input_data_dir, query_file_name, corpus_file_name, qrel_file_name, hard_negatives_file_name
+        Path(hf_dataset_dir),
+        task_names,
+        input_data_dir,
+        query_file_name,
+        corpus_file_name,
+        qrel_file_name,
+        hard_negatives_file_name,
+        n_each_dev_sample,
     )
 
     # apply preprocess (mainly tokenization (make word ids))
     logger.info("Apply preprocessing.")
-    remove_column_names = hf_dataset.column_names.remove("label")
+    remove_column_names = hf_dataset.column_names["train"].remove("label")
     hf_dataset = hf_dataset.map(
         process_func,
         batched=True,
-        num_proc=num_proc,
         remove_columns=remove_column_names,
+        num_proc=num_proc,
         desc="Running Tokenizer on dataset",
     )
 
     # split train/dev dataset
-    logger.info("Split train/dev dataset.")
-    hf_dataset = hf_dataset.class_encode_column("label")
-    n_dev_sample = n_each_dev_sample * len(task_names)
-    train_dev_dataset = hf_dataset.train_test_split(test_size=n_dev_sample, shuffle=True, stratify_by_column="label")
-    train_dataset = train_dev_dataset["train"]
-    dev_dataset = train_dev_dataset["test"]
+    train_dataset = hf_dataset["train"]
+    dev_dataset = hf_dataset["test"]
     logger.info(f"Train dataset size: {len(train_dataset)}")
     logger.info(f"Dev dataset size: {len(dev_dataset)}")
+
 
     # build Torch Dataset and Return ones.
     train_torch_dataset = MNRLDataset(train_dataset, tokenizer, max_length)

@@ -26,6 +26,7 @@ class STModelArguments:
 @dataclass
 class STDataArgumnets:
     data_dir: str
+    hf_dataset_dir: str
     task_names: list[str] = field(default_factory=list)
     max_length: int = 512
     n_dev_sample: int = 100
