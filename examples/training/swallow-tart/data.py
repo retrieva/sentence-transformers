@@ -353,7 +353,6 @@ def get_dataset(
     logger.info(f"Train dataset size: {len(train_dataset)}")
     logger.info(f"Dev dataset size: {len(dev_dataset)}")
 
-
     # build Torch Dataset and Return ones.
     train_torch_dataset = MNRLDataset(train_dataset, tokenizer, max_length)
     dev_torch_dataset = MNRLDataset(dev_dataset, tokenizer, max_length)
