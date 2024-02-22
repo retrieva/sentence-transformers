@@ -1163,3 +1163,10 @@ class SentenceTransformer(nn.Sequential):
     @_target_device.setter
     def _target_device(self, device: Optional[Union[int, str, torch.device]] = None) -> None:
         self.to(device)
+
+    @property
+    def config(self):
+        return self._first_module().config
+
+    def gradient_checkpointing_enable(self, *args, **kwargs):
+        return self._first_module().gradient_checkpointing_enable(*args, **kwargs)
