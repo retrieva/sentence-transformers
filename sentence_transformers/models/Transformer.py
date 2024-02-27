@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from transformers import AutoModel, AutoTokenizer, AutoConfig, T5Config, MT5Config
-from peft import PeftConfig, get_peft_model
+from peft import PeftConfig, get_peft_model, PeftModel
 import json
 from typing import List, Dict, Optional, Union, Tuple
 import os
@@ -30,9 +30,13 @@ class Transformer(nn.Module):
         do_lower_case: bool = False,
         tokenizer_name_or_path: str = None,
         peft_config: Optional[PeftConfig] = None,
+        peft_model_name_or_path: Optional[str] = None,
         is_gradient_checkpointing: bool = False,
     ):
         super(Transformer, self).__init__()
+        if peft_config is not None and peft_model_name_or_path is not None:
+            raise ValueError("Only one of peft_config and peft_model_name_or_path can be set.")
+
         self.config_keys = ["max_seq_length", "do_lower_case"]
         self.do_lower_case = do_lower_case
 
@@ -48,6 +52,9 @@ class Transformer(nn.Module):
                 self.auto_model.gradient_checkpointing_enable()
                 self.auto_model.enable_input_require_grads()
             self.auto_model = get_peft_model(self.auto_model, peft_config)
+
+        if peft_model_name_or_path is not None:
+            self.auto_model = PeftModel.from_pretrained(self.auto_model, peft_model_name_or_path)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             tokenizer_name_or_path if tokenizer_name_or_path is not None else model_name_or_path,
