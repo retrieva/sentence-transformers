@@ -42,7 +42,7 @@ class Transformer(nn.Module):
         if peft_config is not None:
             if is_gradient_checkpointing:
                 for param in self.auto_model.parameters():
-                    param.requires_grad = True
+                    param.requires_grad = False
                     if param.ndim == 1:
                         param.data = param.data.to(torch.float32)
                 self.auto_model.gradient_checkpointing_enable()
