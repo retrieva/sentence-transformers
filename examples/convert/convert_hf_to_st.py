@@ -8,7 +8,9 @@ from sentence_transformers import SentenceTransformer
 def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Convert the Huggingface model to SentenceTransformer model.")
     parser.add_argument("--model_name_or_path", type=str, help="The model name or path of the Huggingface model.")
-    parser.add_argument("--pooling_mode", type=str, default="mean", help="The pooling mode for the SentenceTransformer model.")
+    parser.add_argument(
+        "--pooling_mode", type=str, default="mean", help="The pooling mode for the SentenceTransformer model."
+    )
     parser.add_argument("--save_path", type=str, help="The path to save the SentenceTransformer model.")
     parser.add_argument("--is_append_eos", action="store_true", help="Append the end of sentence token to the input.")
     return parser.parse_args()
