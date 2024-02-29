@@ -1,5 +1,5 @@
-__version__ = "2.4.0.dev0"
-__MODEL_HUB_ORGANIZATION__ = "sentence-transformers"
+__version__ = "0.1.0"
+__MODEL_HUB_ORGANIZATION__ = "retrieva-sentence-transformers"
 from .datasets import SentencesDataset, ParallelSentencesDataset
 from .LoggingHandler import LoggingHandler
 from .SentenceTransformer import SentenceTransformer

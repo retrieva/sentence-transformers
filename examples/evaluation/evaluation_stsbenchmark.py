@@ -6,8 +6,8 @@ python evaluation_stsbenchmark.py
 OR
 python evaluation_stsbenchmark.py model_name
 """
-from sentence_transformers import SentenceTransformer, util, LoggingHandler, InputExample
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers import SentenceTransformer, util, LoggingHandler, InputExample
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 import logging
 import sys
 import torch

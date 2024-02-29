@@ -17,14 +17,14 @@ Making Monolingual Sentence Embeddings Multilingual using Knowledge Distillation
 https://arxiv.org/abs/2004.09813
 """
 
-from sentence_transformers import SentenceTransformer, LoggingHandler, models, evaluation, losses
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler, models, evaluation, losses
 from torch.utils.data import DataLoader
-from sentence_transformers.datasets import ParallelSentencesDataset
+from retrieva_sentence_transformers.datasets import ParallelSentencesDataset
 from datetime import datetime
 
 import os
 import logging
-import sentence_transformers.util
+import retrieva_sentence_transformers.util
 import csv
 import gzip
 from tqdm.autonotebook import tqdm
@@ -81,7 +81,7 @@ def download_corpora(filepaths):
             print(filepath, "does not exists. Try to download from server")
             filename = os.path.basename(filepath)
             url = "https://sbert.net/datasets/" + filename
-            sentence_transformers.util.http_get(url, filepath)
+            retrieva_sentence_transformers.util.http_get(url, filepath)
 
 
 # Here we define train train and dev corpora

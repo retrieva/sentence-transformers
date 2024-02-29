@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Iterable, Dict
 import torch.nn.functional as F
 from torch import nn, Tensor
-from sentence_transformers.SentenceTransformer import SentenceTransformer
+from retrieva_sentence_transformers.SentenceTransformer import SentenceTransformer
 
 
 class SiameseDistanceMetric(Enum):

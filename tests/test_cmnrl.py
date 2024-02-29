@@ -1,7 +1,7 @@
 from contextlib import nullcontext
 from typing import List
 import pytest
-from sentence_transformers import SentenceTransformer, InputExample, losses
+from retrieva_sentence_transformers import SentenceTransformer, InputExample, losses
 import tqdm
 from transformers import set_seed
 import torch
@@ -129,7 +129,7 @@ def test_cmnrl_same_grad(
 @pytest.mark.parametrize("use_rand_context", [True, False])
 def test_rand_context_working(use_rand_context: bool):
     # Given:
-    from sentence_transformers.losses.CachedMultipleNegativesRankingLoss import (
+    from retrieva_sentence_transformers.losses.CachedMultipleNegativesRankingLoss import (
         RandContext,
     )
 

@@ -9,7 +9,7 @@ Making Monolingual Sentence Embeddings Multilingual using Knowledge Distillation
 https://arxiv.org/abs/2004.09813
 """
 import os
-import sentence_transformers.util
+import retrieva_sentence_transformers.util
 import gzip
 
 
@@ -46,7 +46,7 @@ for source_lang in source_languages:
             if not os.path.exists(wikimatrix_filepath):
                 print("Download", download_url + wikimatrix_filename)
                 try:
-                    sentence_transformers.util.http_get(download_url + wikimatrix_filename, wikimatrix_filepath)
+                    retrieva_sentence_transformers.util.http_get(download_url + wikimatrix_filename, wikimatrix_filepath)
                 except Exception:
                     print("Was not able to download", download_url + wikimatrix_filename)
                     continue

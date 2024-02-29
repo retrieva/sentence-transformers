@@ -5,10 +5,10 @@ The system trains BERT on the AllNLI and on the STSbenchmark dataset.
 """
 from torch.utils.data import DataLoader
 import math
-from sentence_transformers import models, losses
-from sentence_transformers import LoggingHandler, SentenceTransformer, util
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers.readers import InputExample
+from retrieva_sentence_transformers import models, losses
+from retrieva_sentence_transformers import LoggingHandler, SentenceTransformer, util
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers.readers import InputExample
 import logging
 from datetime import datetime
 import gzip

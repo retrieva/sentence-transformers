@@ -8,7 +8,7 @@ from typing import Callable, Optional, Tuple
 import datasets
 import torch
 from datasets import load_from_disk
-from sentence_transformers.huggingface import SENTENCE_KEYS
+from retrieva_sentence_transformers.huggingface import SENTENCE_KEYS
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from transformers import PreTrainedTokenizer, BatchEncoding

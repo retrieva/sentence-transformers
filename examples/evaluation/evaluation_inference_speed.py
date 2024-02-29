@@ -6,7 +6,7 @@ python evaluation_inference_speed.py
 OR
 python evaluation_inference_speed.py model_name
 """
-from sentence_transformers import SentenceTransformer, util
+from retrieva_sentence_transformers import SentenceTransformer, util
 import sys
 import os
 import time

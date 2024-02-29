@@ -6,7 +6,7 @@ Computes embeddings
 import numpy as np
 import pytest
 
-from sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers import SentenceTransformer
 
 
 @pytest.mark.parametrize("normalize_embeddings", (False, True))

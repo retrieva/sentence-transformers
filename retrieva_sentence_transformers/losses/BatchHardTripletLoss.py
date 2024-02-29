@@ -1,8 +1,8 @@
 import torch
 from torch import nn, Tensor
 from typing import Iterable, Dict
-from sentence_transformers import util
-from sentence_transformers.SentenceTransformer import SentenceTransformer
+from retrieva_sentence_transformers import util
+from retrieva_sentence_transformers.SentenceTransformer import SentenceTransformer
 
 
 class BatchHardTripletLossDistanceFunction:

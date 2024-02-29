@@ -9,7 +9,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
 from torch.utils.data import DataLoader
 
-from sentence_transformers import (
+from retrieva_sentence_transformers import (
     InputExample,
     SentenceTransformer,
     evaluation,

@@ -5,7 +5,7 @@ Computes embeddings
 
 import numpy as np
 
-from sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers import SentenceTransformer
 
 
 def test_encode_token_embeddings(paraphrase_distilroberta_base_v1_model: SentenceTransformer) -> None:

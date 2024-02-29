@@ -10,8 +10,8 @@ from scipy.stats import pearsonr, spearmanr
 from transformers import TrainingArguments, EvalPrediction
 from transformers.utils import logging
 
-from sentence_transformers import losses
-from sentence_transformers.huggingface import (
+from retrieva_sentence_transformers import losses
+from retrieva_sentence_transformers.huggingface import (
     CosSimSentenceTransformersCollator,
     MNRLSentenceTransformersTrainer,
     MNRLSentenceTransformer,

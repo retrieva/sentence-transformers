@@ -1,6 +1,6 @@
-from sentence_transformers import models, losses
-from sentence_transformers import LoggingHandler, SentenceTransformer, util, InputExample
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers import models, losses
+from retrieva_sentence_transformers import LoggingHandler, SentenceTransformer, util, InputExample
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 import logging
 from datetime import datetime
 import sys

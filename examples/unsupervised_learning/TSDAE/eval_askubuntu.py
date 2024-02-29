@@ -5,8 +5,8 @@ Usage:
 python eval_askubuntu.py [sbert_model_name_or_path]
 """
 
-from sentence_transformers import SentenceTransformer, LoggingHandler
-from sentence_transformers import util, evaluation
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler
+from retrieva_sentence_transformers import util, evaluation
 import logging
 import os
 import gzip

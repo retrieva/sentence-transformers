@@ -16,11 +16,11 @@ which sentence with another label is the closest (hard negative example). It the
 all sentences with the same label should be close and sentences for different labels should be clearly separated.
 """
 
-from sentence_transformers import SentenceTransformer, LoggingHandler, losses, util
-from sentence_transformers.datasets import SentenceLabelDataset
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler, losses, util
+from retrieva_sentence_transformers.datasets import SentenceLabelDataset
 from torch.utils.data import DataLoader
-from sentence_transformers.readers import InputExample
-from sentence_transformers.evaluation import TripletEvaluator
+from retrieva_sentence_transformers.readers import InputExample
+from retrieva_sentence_transformers.evaluation import TripletEvaluator
 from datetime import datetime
 
 

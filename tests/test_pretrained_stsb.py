@@ -8,8 +8,8 @@ from functools import partial
 
 import pytest
 
-from sentence_transformers import InputExample, SentenceTransformer, util
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers import InputExample, SentenceTransformer, util
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 
 
 def pretrained_model_score(model_name, expected_score: float, max_test_samples: int = 100) -> None:

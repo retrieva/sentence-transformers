@@ -6,7 +6,7 @@ import os
 
 from PIL import Image
 
-from sentence_transformers import util, SentenceTransformer
+from retrieva_sentence_transformers import util, SentenceTransformer
 
 
 def test_simple_encode(clip_vit_b_32_model: SentenceTransformer) -> None:
