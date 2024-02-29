@@ -342,11 +342,18 @@ def import_from_string(dotted_path):
     Import a dotted module path and return the attribute/class designated by the
     last name in the path. Raise ImportError if the import failed.
     """
+    # Load original sentence-transformer
+    # prev to new
+    MODULE_MAP = {"sentence_transformers": "retrieva_sentence_transformers"}
     try:
         module_path, class_name = dotted_path.rsplit(".", 1)
     except ValueError:
         msg = "%s doesn't look like a module path" % dotted_path
         raise ImportError(msg)
+
+    for previous_module_names in MODULE_MAP.keys():
+        if previous_module_names in module_path:
+            module_path = module_path.replace(previous_module_names, MODULE_MAP[previous_module_names])
 
     try:
         module = importlib.import_module(dotted_path)
