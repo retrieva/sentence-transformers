@@ -46,7 +46,9 @@ for source_lang in source_languages:
             if not os.path.exists(wikimatrix_filepath):
                 print("Download", download_url + wikimatrix_filename)
                 try:
-                    retrieva_sentence_transformers.util.http_get(download_url + wikimatrix_filename, wikimatrix_filepath)
+                    retrieva_sentence_transformers.util.http_get(
+                        download_url + wikimatrix_filename, wikimatrix_filepath
+                    )
                 except Exception:
                     print("Was not able to download", download_url + wikimatrix_filename)
                     continue

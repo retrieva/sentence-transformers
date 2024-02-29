@@ -5,7 +5,10 @@ from transformers import TrainingArguments, EvalPrediction
 from datasets import load_dataset
 
 from retrieva_sentence_transformers import losses, SentenceTransformer, evaluation
-from retrieva_sentence_transformers.huggingface import CosSimSentenceTransformersCollator, CosSimSentenceTransformersTrainer
+from retrieva_sentence_transformers.huggingface import (
+    CosSimSentenceTransformersCollator,
+    CosSimSentenceTransformersTrainer,
+)
 
 
 LABEL_COLUMN = "label"
