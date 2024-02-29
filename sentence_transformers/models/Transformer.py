@@ -32,16 +32,18 @@ class Transformer(nn.Module):
         peft_config: Optional[PeftConfig] = None,
         peft_model_name_or_path: Optional[str] = None,
         is_gradient_checkpointing: bool = False,
+        torch_dtype: Optional[str] = None,
     ):
         super(Transformer, self).__init__()
         if peft_config is not None and peft_model_name_or_path is not None:
             raise ValueError("Only one of peft_config and peft_model_name_or_path can be set.")
 
-        self.config_keys = ["max_seq_length", "do_lower_case"]
+        self.config_keys = ["max_seq_length", "do_lower_case", "torch_dtype"]
         self.do_lower_case = do_lower_case
+        self.torch_dtype = torch_dtype
 
         config = AutoConfig.from_pretrained(model_name_or_path, **model_args, cache_dir=cache_dir)
-        self._load_model(model_name_or_path, config, cache_dir, **model_args)
+        self._load_model(model_name_or_path, config, cache_dir, torch_dtype, **model_args)
 
         if peft_config is not None:
             if is_gradient_checkpointing:
@@ -76,33 +78,33 @@ class Transformer(nn.Module):
         if tokenizer_name_or_path is not None:
             self.auto_model.config.tokenizer_class = self.tokenizer.__class__.__name__
 
-    def _load_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_model(self, model_name_or_path, config, cache_dir, torch_dtype, **model_args):
         """Loads the transformer model"""
         if isinstance(config, T5Config):
-            self._load_t5_model(model_name_or_path, config, cache_dir, **model_args)
+            self._load_t5_model(model_name_or_path, config, cache_dir, torch_dtype, **model_args)
         elif isinstance(config, MT5Config):
-            self._load_mt5_model(model_name_or_path, config, cache_dir, **model_args)
+            self._load_mt5_model(model_name_or_path, config, cache_dir, torch_dtype, **model_args)
         else:
             self.auto_model = AutoModel.from_pretrained(
-                model_name_or_path, config=config, cache_dir=cache_dir, **model_args
+                model_name_or_path, config=config, cache_dir=cache_dir, torch_dtype=torch_dtype, **model_args
             )
 
-    def _load_t5_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_t5_model(self, model_name_or_path, config, cache_dir, torch_dtype, **model_args):
         """Loads the encoder model from T5"""
         from transformers import T5EncoderModel
 
         T5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = T5EncoderModel.from_pretrained(
-            model_name_or_path, config=config, cache_dir=cache_dir, **model_args
+            model_name_or_path, config=config, cache_dir=cache_dir, torch_dtype=torch_dtype, **model_args
         )
 
-    def _load_mt5_model(self, model_name_or_path, config, cache_dir, **model_args):
+    def _load_mt5_model(self, model_name_or_path, config, cache_dir, torch_dtype, **model_args):
         """Loads the encoder model from T5"""
         from transformers import MT5EncoderModel
 
         MT5EncoderModel._keys_to_ignore_on_load_unexpected = ["decoder.*"]
         self.auto_model = MT5EncoderModel.from_pretrained(
-            model_name_or_path, config=config, cache_dir=cache_dir, **model_args
+            model_name_or_path, config=config, cache_dir=cache_dir, torch_dtype=torch_dtype, **model_args
         )
 
     def __repr__(self):
