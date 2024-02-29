@@ -1,7 +1,7 @@
 """
 This example demonstrates how we can perform semantic search for scientific publications.
 
-As model, we use SPECTER (https://github.com/allenai/specter), which encodes paper titles and abstracts 
+As model, we use SPECTER (https://github.com/allenai/specter), which encodes paper titles and abstracts
 into a vector space.
 
 When can then use util.semantic_search() to find the most similar papers.
@@ -10,7 +10,7 @@ Colab example: https://colab.research.google.com/drive/12hfBveGHRsxhPIUMmJYrll2l
 """
 import json
 import os
-from sentence_transformers import SentenceTransformer, util
+from retrieva_sentence_transformers import SentenceTransformer, util
 
 # First, we load the papers dataset (with title and abstract information)
 dataset_file = "emnlp2016-2018.json"

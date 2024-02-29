@@ -4,11 +4,11 @@ sentences in parallel. This gives a near linear speed-up
 when encoding large text collections.
 It also demonstrates how to stream data which is helpful in case you don't
 want to wait for an extremely large dataset to download, or if you want to
-limit the amount of memory used. More info about dataset streaming: 
+limit the amount of memory used. More info about dataset streaming:
 https://huggingface.co/docs/datasets/stream
 """
 
-from sentence_transformers import SentenceTransformer, LoggingHandler
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler
 import logging
 from datasets import load_dataset
 from torch.utils.data import DataLoader

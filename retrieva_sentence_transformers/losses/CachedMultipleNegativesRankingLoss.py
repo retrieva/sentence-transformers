@@ -5,8 +5,8 @@ import torch
 from torch import nn, Tensor
 from torch.utils.checkpoint import get_device_states, set_device_states
 from typing import Iterable, Dict, Iterator, List, Optional, Tuple
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import util
+from retrieva_sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers import util
 import tqdm
 
 

@@ -1,4 +1,4 @@
-from sentence_transformers.evaluation import SentenceEvaluator
+from retrieva_sentence_transformers.evaluation import SentenceEvaluator
 import logging
 import os
 import csv

@@ -1,7 +1,7 @@
 import pytest
 
-from sentence_transformers import SentenceTransformer, CrossEncoder
-from sentence_transformers.models import Transformer, Pooling
+from retrieva_sentence_transformers import SentenceTransformer, CrossEncoder
+from retrieva_sentence_transformers.models import Transformer, Pooling
 
 
 @pytest.fixture()

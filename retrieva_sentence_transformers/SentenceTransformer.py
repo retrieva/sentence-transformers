@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 if TYPE_CHECKING:
-    from sentence_transformers.readers import InputExample
+    from retrieva_sentence_transformers.readers import InputExample
 
 
 def get_device_name() -> Literal["mps", "cuda", "cpu"]:

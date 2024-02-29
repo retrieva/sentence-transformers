@@ -1,7 +1,7 @@
 import torch
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers import SentenceTransformer, LoggingHandler, models, util, InputExample
-from sentence_transformers import losses
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler, models, util, InputExample
+from retrieva_sentence_transformers import losses
 import os
 import gzip
 import csv

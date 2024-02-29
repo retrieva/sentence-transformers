@@ -6,11 +6,11 @@ To make the model trainable, we add multiple dense layers to create a Deep Avera
 """
 from torch.utils.data import DataLoader
 import math
-from sentence_transformers import models, losses, util
-from sentence_transformers import LoggingHandler, SentenceTransformer
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers.readers import InputExample
-from sentence_transformers.models.tokenizer.WordTokenizer import ENGLISH_STOP_WORDS
+from retrieva_sentence_transformers import models, losses, util
+from retrieva_sentence_transformers import LoggingHandler, SentenceTransformer
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers.readers import InputExample
+from retrieva_sentence_transformers.models.tokenizer.WordTokenizer import ENGLISH_STOP_WORDS
 import logging
 from datetime import datetime
 import os

@@ -1,7 +1,7 @@
 from torch.utils.data import DataLoader
-from sentence_transformers import models, losses, datasets
-from sentence_transformers import LoggingHandler, SentenceTransformer, util, InputExample
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers import models, losses, datasets
+from retrieva_sentence_transformers import LoggingHandler, SentenceTransformer, util, InputExample
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 import logging
 from datetime import datetime
 import os

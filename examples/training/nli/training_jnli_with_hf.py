@@ -6,8 +6,8 @@ from datasets import load_dataset, Dataset
 from transformers import TrainingArguments
 from transformers.utils import logging
 
-from sentence_transformers import losses
-from sentence_transformers.huggingface import (
+from retrieva_sentence_transformers import losses
+from retrieva_sentence_transformers.huggingface import (
     MNRLSentenceTransformersTrainer,
     MNRLSentenceTransformer,
     SENTENCE_KEYS,

@@ -7,8 +7,8 @@ Usage:
 python train_tsdae_from_file.py path/to/sentences.txt
 
 """
-from sentence_transformers import SentenceTransformer, LoggingHandler
-from sentence_transformers import models, datasets, losses
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler
+from retrieva_sentence_transformers import models, datasets, losses
 import logging
 import gzip
 from torch.utils.data import DataLoader

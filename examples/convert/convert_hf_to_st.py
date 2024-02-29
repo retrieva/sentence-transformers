@@ -1,8 +1,8 @@
 """Convert the Huggingface model to SentenceTransformer model."""
 import argparse
 
-from sentence_transformers.models import Transformer, Pooling
-from sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers.models import Transformer, Pooling
+from retrieva_sentence_transformers import SentenceTransformer
 
 
 def get_args() -> argparse.Namespace:

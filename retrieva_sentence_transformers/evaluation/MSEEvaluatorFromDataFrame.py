@@ -1,5 +1,5 @@
-from sentence_transformers.evaluation import SentenceEvaluator
-from sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers.evaluation import SentenceEvaluator
+from retrieva_sentence_transformers import SentenceTransformer
 from typing import List, Tuple, Dict
 import numpy as np
 import logging

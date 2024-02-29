@@ -11,8 +11,8 @@ import pytest
 
 from huggingface_hub import HfApi, RepoUrl, GitRefs, GitRefInfo
 import torch
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.models import Normalize, Transformer, Pooling
+from retrieva_sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers.models import Normalize, Transformer, Pooling
 
 
 def test_load_with_safetensors() -> None:

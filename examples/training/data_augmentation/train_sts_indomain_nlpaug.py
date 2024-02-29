@@ -3,12 +3,12 @@ The script shows how to train Augmented SBERT (In-Domain) strategy for STSb data
 We utilise nlpaug (https://github.com/makcedward/nlpaug) for data augmentation strategies over a single sentence.
 
 We chose synonym replacement for our example with (can be extended to other techniques) -
-    1. Word-embeddings (word2vec) 
+    1. Word-embeddings (word2vec)
     2. WordNet
     3. Contextual word-embeddings (BERT)
 
 Methodology:
-Take a gold STSb pair, like (A, B, 0.6) Then replace synonyms in A and B, which gives you (A', B', 0.6) 
+Take a gold STSb pair, like (A, B, 0.6) Then replace synonyms in A and B, which gives you (A', B', 0.6)
 These are the silver data and SBERT is finally trained on (gold + silver) STSb data.
 
 Additional requirements:
@@ -31,9 +31,9 @@ python train_sts_indomain_nlpaug.py
 from torch.utils.data import DataLoader
 import torch
 import math
-from sentence_transformers import SentenceTransformer, LoggingHandler, losses, models, util
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers.readers import InputExample
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler, losses, models, util
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers.readers import InputExample
 import nlpaug.augmenter.word as naw
 import logging
 from datetime import datetime

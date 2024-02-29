@@ -9,14 +9,14 @@ from typing import Generator, List, Tuple
 import pytest
 from torch.utils.data import DataLoader
 
-from sentence_transformers import (
+from retrieva_sentence_transformers import (
     SentencesDataset,
     SentenceTransformer,
     losses,
     util,
 )
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
-from sentence_transformers.readers import InputExample
+from retrieva_sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from retrieva_sentence_transformers.readers import InputExample
 
 
 @pytest.fixture()

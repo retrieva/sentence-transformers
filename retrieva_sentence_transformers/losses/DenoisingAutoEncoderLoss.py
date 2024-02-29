@@ -1,6 +1,6 @@
 from torch import nn, Tensor
 from typing import Iterable, Dict
-from sentence_transformers import SentenceTransformer
+from retrieva_sentence_transformers import SentenceTransformer
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM, PreTrainedModel
 import logging
 

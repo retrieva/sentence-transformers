@@ -1,8 +1,8 @@
 import argparse
 
 import torch
-from sentence_transformers.huggingface import MNRLSentenceTransformer
-from sentence_transformers.models import Transformer, Pooling, Normalize
+from retrieva_sentence_transformers.huggingface import MNRLSentenceTransformer
+from retrieva_sentence_transformers.models import Transformer, Pooling, Normalize
 
 
 def get_args() -> argparse.Namespace:

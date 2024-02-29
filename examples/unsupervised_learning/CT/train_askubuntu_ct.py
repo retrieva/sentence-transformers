@@ -1,5 +1,5 @@
-from sentence_transformers import SentenceTransformer, LoggingHandler
-from sentence_transformers import models, util, evaluation, losses
+from retrieva_sentence_transformers import SentenceTransformer, LoggingHandler
+from retrieva_sentence_transformers import models, util, evaluation, losses
 import logging
 import os
 import gzip

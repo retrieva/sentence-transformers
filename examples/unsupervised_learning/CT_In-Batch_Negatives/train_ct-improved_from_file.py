@@ -8,8 +8,8 @@ python train_ct_from_file.py path/to/sentences.txt
 
 """
 import math
-from sentence_transformers import models, losses
-from sentence_transformers import LoggingHandler, SentenceTransformer
+from retrieva_sentence_transformers import models, losses
+from retrieva_sentence_transformers import LoggingHandler, SentenceTransformer
 import logging
 from datetime import datetime
 import gzip

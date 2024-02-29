@@ -46,7 +46,7 @@ import csv
 from collections import defaultdict
 import random
 import os
-from sentence_transformers import util
+from retrieva_sentence_transformers import util
 
 
 random.seed(42)

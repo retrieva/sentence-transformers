@@ -7,12 +7,12 @@ lr:
 import os
 import sys
 
-from sentence_transformers import losses
-from sentence_transformers.huggingface import (
+from retrieva_sentence_transformers import losses
+from retrieva_sentence_transformers.huggingface import (
     MNRLSentenceTransformersTrainer,
     MNRLSentenceTransformer,
 )
-from sentence_transformers.models import Transformer, Pooling, Normalize
+from retrieva_sentence_transformers.models import Transformer, Pooling, Normalize
 from transformers import HfArgumentParser, set_seed
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import logging
