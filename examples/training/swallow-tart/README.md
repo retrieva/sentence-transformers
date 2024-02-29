@@ -46,3 +46,34 @@ If you want to use LoRA, add `--peft_config_path $LORA_CONFIG` to the command.
   - Zero3 (cpu-offload): [ds_config_zero3.json](./configs/ds_config_zero3.json)
 - LoRA config
   - LoRA: [lora_config.json](./configs/lora_config.json)
+
+## Save as SentenceTransformer after training
+1. Save consolidated weights from zero-3 checkpoints.
+
+You can use a `zero_to_fp32.py` script generated at output_dir in order to save fp32 state_dict.
+
+```bash
+$ python zero_to_fp32.py output_dir /path/to/pytorch_model.bin
+```
+
+2. Save as a SentenceTransformer model.
+
+The saved model at 1st step is not the Transformers model, but SentenceTransformers model.
+
+You need to save it as a Transformers model.
+
+```bash
+$ python examples/training/swallow-tart/save_as_st_model.py \
+  --base_model_name $MODEL_NAME \
+  --state_dict_path /path/to/pytorch_model.bin \  # the same as 1st step
+  --save_dir /path/to/sentence_transformers_model
+```
+
+You can load the model as a SentenceTransformer.
+
+```python
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("/path/to/sentence_transformers_model")
+```
+
