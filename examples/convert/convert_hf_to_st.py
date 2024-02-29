@@ -26,7 +26,7 @@ def main():
 
     hf_model = Transformer(args.model_name_or_path, tokenizer_args=tokenizer_kwargs, torch_dtype=args.torch_dtype)
     pooler = Pooling(hf_model.get_word_embedding_dimension(), pooling_mode=args.pooling_mode)
-    model = SentenceTransformer(modules=[hf_model, pooler], device='cpu')
+    model = SentenceTransformer(modules=[hf_model, pooler], device="cpu")
 
     model.save(args.save_path)
 
