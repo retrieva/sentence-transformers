@@ -1,5 +1,5 @@
 
-check_dirs := examples sentence_transformers tests docs setup.py
+check_dirs := examples retrieva_sentence_transformers tests docs setup.py
 
 quality:
 	ruff check $(check_dirs)
