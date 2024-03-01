@@ -351,9 +351,13 @@ def import_from_string(dotted_path):
         msg = "%s doesn't look like a module path" % dotted_path
         raise ImportError(msg)
 
-    for previous_module_names in MODULE_MAP.keys():
-        if previous_module_names in module_path:
-            module_path = module_path.replace(previous_module_names, MODULE_MAP[previous_module_names])
+    # rename dotted_path and modules
+    for previous_module_name in MODULE_MAP.keys():
+        if previous_module_name in module_path:
+            module_path = module_path.replace(previous_module_name, MODULE_MAP[previous_module_name])
+
+        if previous_module_name in dotted_path:
+            dotted_path = dotted_path.replace(previous_module_name, MODULE_MAP[previous_module_name])
 
     try:
         module = importlib.import_module(dotted_path)
