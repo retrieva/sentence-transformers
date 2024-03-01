@@ -56,6 +56,7 @@ def main():
         model_kwargs = {}
     tf_model = Transformer(
         model_args.model_name,
+        max_seq_length=data_args.max_length,
         model_args=model_kwargs,
         peft_config=model_args.peft_config,
         is_gradient_checkpointing=training_args.gradient_checkpointing,
@@ -67,7 +68,7 @@ def main():
     # https://github.com/texttron/tevatron/blob/2e5d00ee21d5a7db0bd2ea1463c9150a572106d4/examples/repllama/train.py#L68-L69
     tokenizer.pad_token_id = tokenizer.unk_token_id
     tokenizer.pad_token = tokenizer.unk_token
-    max_length = min(data_args.max_length, tokenizer.model_max_length)
+    max_length = model.get_max_seq_length()
     tokenizer.model_max_length = max_length
     loss = losses.MultipleNegativesRankingLoss(model=model)
     ir_collator = IRCollator(tokenizer, max_length)
