@@ -13,8 +13,14 @@ def get_args() -> argparse.Namespace:
     )
     parser.add_argument("--save_path", type=str, help="The path to save the SentenceTransformer model.")
     parser.add_argument("--is_append_eos", action="store_true", help="Append the end of sentence token to the input.")
-    parser.add_argument("--torch_dtype", default="auto", help="Setting torch_dtype for the huggigface's model inference.")
-    parser.add_argument("--set_pad_token", action="store_true", help="If true, set pad_token using unk_token. (If you use Llama2 model, need to set it.)")
+    parser.add_argument(
+        "--torch_dtype", default="auto", help="Setting torch_dtype for the huggigface's model inference."
+    )
+    parser.add_argument(
+        "--set_pad_token",
+        action="store_true",
+        help="If true, set pad_token using unk_token. (If you use Llama2 model, need to set it.)",
+    )
     return parser.parse_args()
 
 
